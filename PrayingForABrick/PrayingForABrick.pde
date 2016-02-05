@@ -65,7 +65,7 @@ void updateAll() //updates the states of all parts of our beautiful game
       }
    }
    daPaddle.update(int(getPaddleIncrement() ), width ); //update paddle with an increment dependent upon the controller direction
-   daBall.update(width, height, daBricks, daPaddle); //update ball
+   daBall.update(width, height, daBricks, daPaddle, daGame); //update ball
 }
 
 int[] getControllerState() //returns an array containing all of the information from the controller

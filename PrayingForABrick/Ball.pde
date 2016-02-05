@@ -31,7 +31,7 @@ class Ball
       this.vx = vx; 
       this.isCaught = isCaught;
    }
-   void update(int screenWidth, int screenHeight, Brick[][] daBricks, Paddle daPaddle)
+   void update(int screenWidth, int screenHeight, Brick[][] daBricks, Paddle daPaddle, GameState daGame)
    {
       if(isCaught) //if the ball is caught (new game or catch powerup)
       {
@@ -49,7 +49,7 @@ class Ball
          y = constrain(y + vy, 0 + r, screenHeight - r);
          if(!hitDaPaddle(daPaddle) && !hitDaBricks(daBricks))
          {
-            updateDirection(screenWidth, screenHeight);
+            updateDirection(screenWidth, screenHeight, daGame);
          }
       }
       Random ran = new Random();
@@ -125,7 +125,7 @@ class Ball
    {
       return (y + vy + r > screenHeight);
    }
-   void updateDirection(int screenWidth, int screenHeight)
+   void updateDirection(int screenWidth, int screenHeight, GameState daGame)
    {
       if(x + r >= screenWidth || x - r <= 0)
       {
