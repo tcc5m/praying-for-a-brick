@@ -7,6 +7,10 @@ class GameState
    int level;
    int h;
    int w;
+   
+   int totalMenu = 3;
+   int currentSelection = 0; //start with play selected
+      
    GameState()
    {
       for(int i = 0; i < 4; i++)
@@ -110,8 +114,110 @@ class GameState
    }
    void update()
    {
-      drawBackground();
-      drawButtons(colors);
-      drawLives();
+         drawBackground();
+         drawButtons(colors);
+         drawLives();
+   }
+
+   /*
+   0 = Play
+   1 = Options
+   2 = Quit
+   */
+   void drawMainMenu(int select, boolean isSelected){
+
+      int navSpeed = 10;
+     
+      println("selection is " + currentSelection);
+
+      if(select == 1){
+         currentSelection--;
+
+         if(currentSelection < 0)
+         currentSelection = totalMenu - 1; //last menu item
+      }
+
+      if(select == -1){
+         currentSelection++;
+
+         if(currentSelection > totalMenu-1)
+         currentSelection = 0;
+      }
+      //if select is 0 nothing happens
+
+
+      noStroke();
+      fill(225, 225, 225);
+      rect(0, 0, 600, 600); //drawBackground covering entire canvas
+
+      //println("drawing MAIN");
+      // Uncomment the following two lines to see the available fonts 
+      //String[] fontList = PFont.list();
+      //printArray(fontList);
+
+      switch(currentSelection){
+         case 0: //Play
+
+            if(isSelected == true) //if enter has been pressed
+               level = 1;
+
+            fill(0,0,0);
+            text("Prayin For A Brick", w/2, 100);
+            fill(255,0,0);
+            text("Play", w/2, 150);
+            fill(0,0,0);
+            text("Options", w/2, 200);
+            fill(0,0,0);
+            text("Quit", w/2, 250);
+            fill(0,0,0);
+            text("Left and Right to navigate. D3 to select.", w/2, 500);
+            delay(navSpeed);
+            break;
+         case 1: //Options
+
+            if(isSelected == true) //if enter has been pressed
+               level = 2;
+
+            fill(0,0,0);
+            text("Prayin For A Brick", w/2, 100);
+            fill(0,0,0);
+            text("Play", w/2, 150);
+            fill(255,0,0);
+            text("Options", w/2, 200);
+            fill(0,0,0);
+            text("Quit", w/2, 250);
+            fill(0,0,0);
+            text("Left and Right to navigate. D3 to select.", w/2, 500);
+            delay(navSpeed);
+            break;
+         case 2: //Quit
+
+            if(isSelected == true) //if enter has been pressed
+            exit();
+
+            fill(0,0,0);
+            text("Prayin For A Brick", w/2, 100);
+            fill(0,0,0);
+            text("Play", w/2, 150);
+            fill(0,0,0);
+            text("Options", w/2, 200);
+            fill(255,0,0);
+            text("Quit", w/2, 250);
+            fill(0,0,0);
+            text("Left and Right to navigate. D3 to select.", w/2, 500);
+            delay(navSpeed);
+            break;
+      }
+   }
+   void drawOptions(boolean isStopped){
+      if(!isStopped){
+            fill(0,0,0);
+            text("Options", w/2, 100);
+            fill(255,0,0);
+            text("But nobody came...", w/2, 150);
+            fill(0,0,0);
+            text("D4 to go back", w/2, 500);
+      }else level = 0;
+
    }
 }
