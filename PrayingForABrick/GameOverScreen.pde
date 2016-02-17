@@ -8,9 +8,9 @@ class GameOverScreen
       float w = width / 2;
       float x = width / 2 - w / 2;
       float y = ( (height - (h / menu.length) ) / (menu.length + 1) ) - (h / 2); 
-      menu[0] = new MenuBox("New Game", x, y, w, h, shades[3][0], shades[3][1], shades[3][2]);
+      menu[0] = new MenuBox("New Game", x, y, w, h, shades[2][0], shades[2][1], shades[2][2]);
       y *= 2;
-      menu[1] = new MenuBox("Exit", x, y, w, h, shades[3][0], shades[3][1], shades[3][2]);
+      menu[1] = new MenuBox("Exit", x, y, w, h, shades[2][0], shades[2][1], shades[2][2]);
    }
    void update(int [][] shades)
    {
@@ -22,9 +22,9 @@ class GameOverScreen
       {
          if(i != selectedItem)
          {
-            menu[i].r = shades[3][0];
-            menu[i].g = shades[3][1];
-            menu[i].b = shades[3][2];
+            menu[i].r = shades[2][0];
+            menu[i].g = shades[2][1];
+            menu[i].b = shades[2][2];
             menu[i].update();
          }
       }

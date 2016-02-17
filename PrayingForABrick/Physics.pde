@@ -9,7 +9,7 @@ class Physics
            (ballY >= rectY && ballY <= rectY + rectH)
       );
    }
-   Boolean didBallHitRight(float ballX, float ballY, float ballR, float rectX, float rectY, float rectW, float rectH)g
+   Boolean didBallHitRight(float ballX, float ballY, float ballR, float rectX, float rectY, float rectW, float rectH)
    {
       return (
                 (ballX - ballR <= rectX + rectW && ballX + ballR > rectX + rectW) && //right side hit

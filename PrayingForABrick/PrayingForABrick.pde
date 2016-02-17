@@ -88,8 +88,8 @@ void mainGame() //updates the states of all parts of our beautiful game
      reset(false, true);
    }
    ArrayList<Integer> pressedButtons = daController.update(getControllerState()); //update the controller's state
-   daGame.update(pressedButtons, colors, shades, streakReward);
    triggerPowerUps(pressedButtons);
+   daGame.update(pressedButtons, colors, shades, streakReward);
    updateBricks();
    updatePowerUps();
    daPaddle.update(int(getPaddleIncrement() ), width ); //update paddle with an increment dependent upon the controller direction
@@ -155,6 +155,11 @@ void reset(Boolean doResetGameState, Boolean doResetBricks)
    daBall.isCaught = true;
    daBall.isInvincible = false;
    daBall.doCatch = false;
+   for(int i = 0; i < daGame.powerUps.length; i++)
+   {
+      if(daGame.powerUps[i] == 0);
+         daGame.powerUps[i] = -1;
+   }
    if(doResetGameState)
    {
       daGame.lives = startLives;
@@ -273,7 +278,10 @@ void updatePowerUps()
 {
    if (daGame.streak >= streakReward) //if the player deserves a reward for their streak
    {
-      daPowerUp = new PowerUp(width / 2, height / 4, 2, ballRadius * 2, daGame.powerUpType++ % daGame.powerUps.length); //get rid of that old powerup and make a new one
+      Random r = new Random();
+      int x = r.nextInt( (int) (width - (4 * ballRadius) ) );
+      x += 2 * ballRadius;
+      daPowerUp = new PowerUp(x, height / 4, 2, ballRadius * 2, daGame.powerUpType++ % daGame.powerUps.length); //get rid of that old powerup and make a new one
       daGame.streak -= streakReward;
    }
    if(daPowerUp != null && daPowerUp.update(daPaddle, daGame, colors) )

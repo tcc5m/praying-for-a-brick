@@ -144,7 +144,7 @@ class Ball
       }
       else if(side == 1 || side == 2) //if the ball has hit the left or right of the paddle
       {
-         float f = map(daPaddle.y - y, 0, -1 * daPaddle.h, 1, maxSpeed -1);
+         float f = map(daPaddle.y - y, 0, -1 * daPaddle.h, -1, -1 * (maxSpeed -1) );
          f = constrain(f, -1 * (maxSpeed - 1), maxSpeed - 1);
          vy = f;
          vx = maxSpeed - abs(f);

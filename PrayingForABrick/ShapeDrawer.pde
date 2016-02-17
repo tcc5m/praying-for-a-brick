@@ -25,9 +25,10 @@ class ShapeDrawer
    {
       noStroke();
       fill(colors[0], colors[1], colors[2]);
-      triangle(x, y - ( (3 * r) / 4), x + ( (3 * r) / 4), y + (r / 3), x - ( (3 * r) / 4), y + (r / 3) );
+      y += r / 4;
+      triangle(x, y + (r / 3), x + ( (3 * r) / 4), y - ( (3 * r) / 4), x - ( (3 * r) / 4), y - ( (3 * r) / 4));
       fill(bgColors[0], bgColors[1], bgColors[2]);
-      triangle(x, y - ( (5 * r) / 8), x + ( (5 * r) / 8), y + (r / 4), x - ( ( 5 * r) / 8), y + (r / 4) );
+      triangle(x, y + (r / 4), x + ( (5 * r) / 8), y - ( (5 * r) / 8), x - ( ( 5 * r) / 8), y - ( (5 * r) / 8) );
    }
    void drawStar(float x, float y, float radius1, float radius2, int npoints) 
    {
