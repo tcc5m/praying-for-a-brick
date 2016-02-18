@@ -8,6 +8,7 @@ class Ball
    Boolean isInvincible = false;
    Boolean doCatch = false;
    float maxSpeed = 8; //this is the max speed of the ball
+   float speedMultiplier = 1.00005;
    Ball()
    {
       x = 0;
@@ -39,7 +40,7 @@ class Ball
    }
    Boolean update(int screenWidth, int screenHeight, int[][] colors, int [][] shades, Brick[][] daBricks, Paddle daPaddle, GameState daGame)
    {
-      maxSpeed *= 1.0001;
+      maxSpeed *= speedMultiplier;
       Boolean lifeLost = false; //
       if(isCaught) //if the ball is caught (new game or catch powerup)
          caughtRoutine(daPaddle);
