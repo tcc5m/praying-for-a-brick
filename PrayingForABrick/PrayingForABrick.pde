@@ -40,16 +40,23 @@ int streakReward = 4;
 
 
 Boolean isGameOver = false;
-Serial myPort = getPort();
 Brick[][] daBricks;
 Paddle daPaddle;
 GameState daGame;
 Controller daController = new Controller();
+Serial myPort;
 PowerUp daPowerUp;
 Ball daBall;
 GameOverScreen gameOver;
 
-
+//Menu variables
+boolean isKB = false; //are we using keyboard?
+boolean isMovingLeft = false; //paddle
+boolean isMovingRight = false;
+boolean isMainUp = false; //main menu selectors
+boolean isMainDown = false;
+boolean isSelected = false;
+boolean navLock = false;
 
 void setup()
 {
@@ -59,6 +66,15 @@ void setup()
    daPaddle = new Paddle( (width / 2) - brickW, height - brickH - (3 * ballRadius), brickW * 2, brickH, 155, 155, 155); //create the paddle using these data points
    daBall = new Ball(daPaddle.x + (daPaddle.w / 2), daPaddle.y - ballRadius, ballRadius, maxSpeed); //put the ball atop the paddle
    gameOver = new GameOverScreen(shades);
+
+   //font for menu
+   PFont font;
+   font = createFont("Comic Sans MS", 32);
+   textFont(font);
+   textAlign(CENTER, CENTER);
+
+   if(!isKB) //so can run game without ardunio
+   myPort = getPort();
 }
 
 Serial getPort()
@@ -82,29 +98,94 @@ void draw()
 
 void mainGame() //updates the states of all parts of our beautiful game
 {
-   if(daGame.numBricks == daGame.hitBricks && daGame.numBricks != 0)
-   {
-     daGame.levelUp();
-     reset(false, true);
-   }
-   ArrayList<Integer> pressedButtons = daController.update(getControllerState()); //update the controller's state
-   triggerPowerUps(pressedButtons);
-   daGame.update(pressedButtons, colors, shades, streakReward);
-   updateBricks();
-   updatePowerUps();
-   daPaddle.update(int(getPaddleIncrement() ), width ); //update paddle with an increment dependent upon the controller direction
-   if(daBall.update(width, height, colors, shades, daBricks, daPaddle, daGame) ) //update ball; returns true if life is lost
-   {
-      if(daGame.lives == 0) //if the player has nothing left to lose
+   daController.update(getControllerState());
+
+   if(daGame.glevel == 1){ //if playing main game
+
+      if(daGame.numBricks == daGame.hitBricks && daGame.numBricks != 0)
       {
-         isGameOver = true; //the game is over
+        daGame.levelUp();
+        reset(false, true);
       }
+      ArrayList<Integer> pressedButtons = daController.update(getControllerState()); //update the controller's state
+      triggerPowerUps(pressedButtons);
+      daGame.update(pressedButtons, colors, shades, streakReward);
+      updateBricks();
+      updatePowerUps();
+      daPaddle.update(int(getPaddleIncrement() ), width ); //update paddle with an increment dependent upon the controller direction
+
+      //keyboard movement, menu
+      if(isMovingLeft)
+         daPaddle.update(-5, width);
+      else if(isMovingRight)
+         daPaddle.update(5, width);
       else
+         daPaddle.update(0, width);
+
+      if(daBall.update(width, height, colors, shades, daBricks, daPaddle, daGame) ) //update ball; returns true if life is lost
       {
-         daGame.loseLife();
-         reset(false, false);
+         if(daGame.lives == 0) //if the player has nothing left to lose
+         {
+            isGameOver = true; //the game is over
+         }
+         else
+         {
+            daGame.loseLife();
+            reset(false, false);
+         }
+      }
+
+   }else if(daGame.glevel == 0){ // on main menu
+
+      //menu navigation with controller
+      int pInc = int(getPaddleIncrement());
+      print("Increment = ", pInc);
+
+      if(!isKB){
+         if(pInc == -maxSpeed && !navLock){
+            isMainUp = true;
+            navLock = true; // can only navigate ONCE without returning to 0 first
+         } 
+         else if(pInc == maxSpeed && !navLock){
+            isMainDown = true;
+            navLock = true;
+         } 
+         else if(pInc == 0) {
+            isMainUp = false;
+            isMainDown = false;
+            navLock = false;
+         }
+      }
+
+      //menu selection with controller
+      if(daController.buttons[0] == true) isSelected = true;
+      else isSelected = false; 
+
+      //print("isMainUp = ", isMainUp);
+      //print("isMainDown = ", isMainDown);
+
+      if (isMainUp) daGame.drawMainMenu(1, isSelected); //selector up
+      else if (isMainDown) daGame.drawMainMenu(-1, isSelected); //selector down
+      else daGame.drawMainMenu(0, isSelected); //draw, but don't move selection
+
+      //after one navigation, lock navigation until analog is centered
+     
+      isMainUp = false;
+      isMainDown = false;
+
+
+      println("navLock = ", navLock);
+   //glevel 2 is options menu, pressing button 0 goes back to main menu
+   }else if(daGame.glevel == 2){ //options menu
+
+      if(daController.buttons[1] == false){
+         daGame.drawOptions(false);
+      }
+      else{
+         daGame.drawOptions(true);
       }
    }
+
 }
 void gameOverYeah()
 {
@@ -128,6 +209,9 @@ void gameOverYeah()
 int[] getControllerState() //returns an array containing all of the information from the controller
 {
    int[] state = new int[0];
+   
+   if(isKB) return state; //no controller
+   
    if ( myPort.available() > 0) 
    { 
       String input = myPort.readStringUntil('\n'); 
@@ -325,3 +409,64 @@ Brick[][] setupBricks(int rows, int cols)
    }
    return theseBricks;
 }
+
+// keyboard input control and menu
+void keyPressed(){
+   switch(key){
+      case 'a':
+         isMovingLeft = true;
+         isMainUp = true;
+         //navLock = true;
+         break;
+      case 'd':
+         isMovingRight = true;
+         isMainDown = true;
+         //navLock = true;
+         break;
+      case 'y':
+         daController.buttons[0] = true;
+         isSelected = true;
+         break;
+      case 'u':
+         daController.buttons[1] = true;
+         break;
+      case 'i':
+         daController.buttons[2] = true;
+         break;
+      case 'o':
+         daController.buttons[3] = true;
+         break;
+      // case 'p':
+      //    daController.buttons[4] = true;
+      //    break;
+   }
+}
+
+// menu
+void keyReleased(){
+      switch(key){
+      case 'a':
+         isMovingLeft = false;
+         isMainUp = false;
+         navLock = false;
+         break;
+      case 'd':
+         isMovingRight = false;
+         isMainDown = false;
+         navLock = false;
+         break;
+      case 'y':
+         daController.buttons[0] = false;
+         isSelected = false;
+         break;
+      case 'u':
+         daController.buttons[1] = false;
+         break;
+      case 'i':
+         daController.buttons[2] = false;
+         break;
+      case 'o':
+         daController.buttons[3] = false;
+         break;
+      }
+   }
