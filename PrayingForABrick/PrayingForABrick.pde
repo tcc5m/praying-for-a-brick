@@ -3,6 +3,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.Vector;
 
 //brick settings
 int[][] colors = {
@@ -48,7 +49,7 @@ Brick[][] daBricks;
 Paddle daPaddle;
 GameState daGame;
 Controller daController = new Controller();
-PowerUp daPowerUp;
+Vector<PowerUp> daPowerUps = new Vector<PowerUp>();
 Ball daBall;
 Menu menu;
 
@@ -56,7 +57,7 @@ Menu menu;
 
 void setup()
 {
-   size(1000,1000); //create a new window
+   size(800 ,800); //create a new window
    ballRadius = min(width, height) / 100;
    brickW = (width - ( (brickCols + 1) * brickSpacing) ) / brickCols; 
    daGame = new GameState(startLives, 0, width, colors);
@@ -188,6 +189,7 @@ float getPaddleIncrement()
 }
 void reset(Boolean doResetGameState, Boolean doResetBricks)
 {
+   daPowerUps.clear();
    daPaddle.x = (width / 2) - brickW;
    daPaddle.y = (height - brickH - (3 * ballRadius) );
    daPaddle.h = brickH;
@@ -255,7 +257,8 @@ void triggerPowerUps(ArrayList<Integer> pressedButtons)
                if(daBall.isCaught)
                {
                  daBall.isCaught = false;
-                 daBall.vy = maxSpeed * -1; 
+                 daBall.vy = maxSpeed * -1;
+                 daBall.vx = 0;
                  daGame.powerUps[0] = -1;
                }
                else if(!daBall.doCatch && daGame.powerUps[i] == 1)
@@ -323,11 +326,16 @@ void updatePowerUps()
       Random r = new Random();
       int x = r.nextInt( (int) (width - (4 * ballRadius) ) );
       x += 2 * ballRadius;
-      daPowerUp = new PowerUp(x, height / 4, 2, ballRadius * 2, daGame.powerUpType++ % daGame.powerUps.length); //get rid of that old powerup and make a new one
+      daPowerUps.add(new PowerUp(x, height / 4, 2, ballRadius * 2, daGame.powerUpType++ % daGame.powerUps.length) );
       daGame.streak -= streakReward;
    }
-   if(daPowerUp != null && daPowerUp.update(daPaddle, daGame, colors) )
-      daGame.powerUps[daPowerUp.type] = 1;
+   for(int i = 0; i < daPowerUps.size(); i++)
+   {
+      if(daPowerUps.elementAt(i).y - daPowerUps.elementAt(i).r >= height)
+         daPowerUps.remove(i);
+      else if(daPowerUps.elementAt(i).update(daPaddle, daGame, colors) )
+         daGame.powerUps[daPowerUps.elementAt(i).type] = 1;
+   }
 }
 void updateBricks()
 {
