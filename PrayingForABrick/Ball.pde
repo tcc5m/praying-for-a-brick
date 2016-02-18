@@ -87,7 +87,7 @@ class Ball
                if(side != -1) //if the ball has hit a brick
                {
                   daBricks[i][j].hit(); //indicate the brick has been hit
-                  daGame.score += 1 * daGame.multiplier; //increment score
+                  daGame.score += 1; //increment score
                   daGame.streak++;
                   daGame.hitBricks++;
                   if(side == 1 || side == 2 || side == 0) //the ball has hit a brick on the left or right

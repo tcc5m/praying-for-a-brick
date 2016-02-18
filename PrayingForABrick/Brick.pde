@@ -4,6 +4,8 @@ class Brick
    float r, g, b;
    float bR, bG, bB;
    float h, w;
+   int hitsLeft;
+   int maxHits;
    boolean isHit = false; //determines whether or not the brick has been hit
    Brick()
    {
@@ -17,26 +19,39 @@ class Brick
       bR = 0;
       bG = 0;
       bB = 0;
+      maxHits = 0;
+      hitsLeft = maxHits;
    }
-   Brick(float x, float y, float w, float h, float r, float g, float b, float bR, float bG, float bB)
+   Brick(float x, float y, float w, float h, int maxHits, float r, float g, float b, float bR, float bG, float bB)
    {
       this.x = x;
       this.y = y;
       this.h = h;
       this.w = w;
+      this.maxHits = maxHits;
       this.r = r;
       this.g = g;
       this.b = b;
       this.bR = bR;
       this.bG = bG;
       this.bB = bB;
+      hitsLeft = maxHits;
    }
    void hit()
    {
-      r = bR;
-      g = bG;
-      b = bB;
-      isHit = true;
+      if(--hitsLeft == 0)
+      {
+         r = bR;
+         g = bG;
+         b = bB;
+         isHit = true;
+      }
+      else
+      {
+         r = (hitsLeft * (r - bR) / maxHits) + bR;
+         g = (hitsLeft * (g - bG) / maxHits) + bG;
+         b = (hitsLeft * (b - bB) / maxHits) + bB;
+      }
    }
    void update()
    {

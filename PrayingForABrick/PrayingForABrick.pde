@@ -212,6 +212,7 @@ void reset(Boolean doResetGameState, Boolean doResetBricks)
       daGame.streak = 0;
       daGame.level = startLevel;
       daGame.powerUpType = 0;
+      daGame.score = 0;
       for(int i = 1; i < daGame.powerUps.length; i++)
          daGame.powerUps[i] = -1;
    }
@@ -230,6 +231,8 @@ void reset(Boolean doResetGameState, Boolean doResetBricks)
             daBricks[i][j].g = colors[i][1];
             daBricks[i][j].b = colors[i][2];
             daBricks[i][j].isHit = false;
+            daBricks[i][j].maxHits = daGame.multiplier;
+            daBricks[i][j].hitsLeft = daGame.multiplier;
          }
       }
       for(int i = ( (daGame.level - 1) % 7) + 1; i < daBricks.length; i++)
@@ -326,7 +329,7 @@ void updatePowerUps()
       Random r = new Random();
       int x = r.nextInt( (int) (width - (4 * ballRadius) ) );
       x += 2 * ballRadius;
-      daPowerUps.add(new PowerUp(x, height / 4, 2, ballRadius * 2, daGame.powerUpType++ % daGame.powerUps.length) );
+      daPowerUps.add(new PowerUp(x, (daBricks[(daGame.level - 1) % daBricks.length][0].y) + (brickH * 2), 2, ballRadius * 2, daGame.powerUpType++ % daGame.powerUps.length) );
       daGame.streak -= streakReward;
    }
    for(int i = 0; i < daPowerUps.size(); i++)
@@ -354,7 +357,7 @@ Brick[][] setupBricks(int rows, int cols)
          daGame.numBricks++;
          float x = offset + (j * (brickW + brickSpacing) );
          float y = brickSpacing + daGame.h + (i * (brickSpacing + brickH) );
-         theseBricks[i][j] = new Brick(x, y, brickW, brickH, colors[i][0], colors[i][1], colors[i][2], shades[1][0], shades[1][1], shades[1][2]);
+         theseBricks[i][j] = new Brick(x, y, brickW, brickH, daGame.multiplier, colors[i][0], colors[i][1], colors[i][2], shades[1][0], shades[1][1], shades[1][2]);
       }
    }
    for(int i = ( (daGame.level - 1) % 7) + 1; i < rows; i++)
@@ -363,7 +366,7 @@ Brick[][] setupBricks(int rows, int cols)
       {
          float x = offset + (j * (brickW + brickSpacing) );
          float y = brickSpacing + daGame.h + (i * (brickSpacing + brickH) );
-         theseBricks[i][j] = new Brick(x, y, brickW, brickH, shades[1][0], shades[1][1], shades[1][2], shades[1][0], shades[1][1], shades[1][2]);
+         theseBricks[i][j] = new Brick(x, y, brickW, brickH, daGame.multiplier, shades[1][0], shades[1][1], shades[1][2], shades[1][0], shades[1][1], shades[1][2]);
          theseBricks[i][j].isHit = true;
       }
    }
