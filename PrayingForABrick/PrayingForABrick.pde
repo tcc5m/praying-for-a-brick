@@ -89,8 +89,6 @@ void draw()
 void updateMenu()
 {
    ArrayList<Integer> pressedButtons = daController.update(getControllerState()); //update the controller's state
-   if(pressedButtons.size() > 0)
-      println(pressedButtons);
    int yIncrement = (int) map(daController.yStick, 1023, 0, -1, 1);
    int xIncrement = (int) map(daController.xStick, 0, 1023, -1, 1);
    if(menu.isOptions)
