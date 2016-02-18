@@ -51,9 +51,9 @@ class Brick
       }
       else
       {
-         r = (hitsLeft * (r - bR) / maxHits) + bR;
-         g = (hitsLeft * (g - bG) / maxHits) + bG;
-         b = (hitsLeft * (b - bB) / maxHits) + bB;
+         r -= decrement[0];
+         g -= decrement[1];
+         b -= decrement[2];
       }
    }
    void setDecrement()

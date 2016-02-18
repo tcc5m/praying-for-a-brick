@@ -40,7 +40,7 @@ class Ball
    }
    Boolean update(int screenWidth, int screenHeight, int[][] colors, int [][] shades, Brick[][] daBricks, Paddle daPaddle, GameState daGame)
    {
-      maxSpeed *= speedMultiplier;
+      maxSpeed = constrain(maxSpeed * speedMultiplier, 1, 16);
       Boolean lifeLost = false; //
       if(isCaught) //if the ball is caught (new game or catch powerup)
          caughtRoutine(daPaddle);
