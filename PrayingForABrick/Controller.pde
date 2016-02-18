@@ -9,9 +9,7 @@ class Controller
       xStick = 512;
       yStick = 512;
       for(int i = 0; i < 5; i++)
-      {
          buttons[i] = false; 
-      }
    }
    ArrayList<Integer> update(int[] state)
    {
@@ -22,12 +20,8 @@ class Controller
    {
       ArrayList<Integer> pressed = new ArrayList<Integer>();
       for(int i = 0; i < buttons.length; i++)
-      {
          if(buttons[i])
-         {
             pressed.add(i);
-         }
-      }
       return pressed;
    }
    void updateButtons(int[] state)
@@ -37,9 +31,7 @@ class Controller
          xStick = state[0];
          yStick = state[1];
          for(int i = 0; i < 4; i++)
-         {
             buttons[i] = (state[i + 3] == 0);
-         }
          buttons[4] = (state[2] == 0);
       }
    }

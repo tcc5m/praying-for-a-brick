@@ -30,9 +30,7 @@ class PowerUp
          s.drawType(x, y, r, type, foreGround, colors[3]);
       }
       else
-      {
          y = height + 100;
-      }
       return didHit;
    }
    Boolean hitPaddle(Paddle daPaddle)

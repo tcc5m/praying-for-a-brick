@@ -21,8 +21,10 @@ int[][] shades = {
   {255, 255, 255}
 };
 float brickH = 16; //height of a brick/paddle
-float brickW = 50; //width of a brick/.5 width of paddle
+float brickW; //width of a brick/.5 width of paddle
 float brickSpacing = 10;
+int brickCols = 10;
+int brickRows = colors.length;
 
 
 //ball settings
@@ -47,18 +49,23 @@ GameState daGame;
 Controller daController = new Controller();
 PowerUp daPowerUp;
 Ball daBall;
-GameOverScreen gameOver;
+Menu menu;
 
 
 
 void setup()
 {
-   size(600,600); //create a new window
-   daGame = new GameState(startLives, startLevel, width, colors);
-   daBricks = setupBricks(7, 10);
+   size(1000,1000); //create a new window
+   brickW = (width - ( (brickCols + 1) * brickSpacing) ) / brickCols; 
+   daGame = new GameState(startLives, 0, width, colors);
+   menu = new Menu(startLevel, startLives, streakReward, maxSpeed, shades[2]);
+}
+
+void setupGame()
+{
+   daBricks = setupBricks(brickRows, brickCols);
    daPaddle = new Paddle( (width / 2) - brickW, height - brickH - (3 * ballRadius), brickW * 2, brickH, 155, 155, 155); //create the paddle using these data points
    daBall = new Ball(daPaddle.x + (daPaddle.w / 2), daPaddle.y - ballRadius, ballRadius, maxSpeed); //put the ball atop the paddle
-   gameOver = new GameOverScreen(shades);
 }
 
 Serial getPort()
@@ -69,15 +76,67 @@ Serial getPort()
 
 void draw()
 {
-   background(shades[1][0],shades[1][0],shades[1][0]); //draw the background
-   if(!isGameOver) //if the player has not lost the game
-   {
+   background(shades[1][0],shades[1][1],shades[1][1]); //draw the background
+   if(daGame.level == 0)
+     updateMenu();
+   else if(!isGameOver) //if the player has not lost the game
       mainGame(); //and call update on all those bitches
+   else
+      gameOverYeah();
+}
+void updateMenu()
+{
+   ArrayList<Integer> pressedButtons = daController.update(getControllerState()); //update the controller's state
+   int yIncrement = (int) map(daController.yStick, 1023, 0, -1, 1);
+   int xIncrement = (int) map(daController.xStick, 0, 1023, -1, 1);
+   if(menu.isOptions)
+   {
+      menu.selectedItem = (int) constrain(menu.selectedItem + yIncrement, 0, menu.optionsMenu.length);
    }
    else
+      menu.selectedItem = (int) constrain(menu.selectedItem + yIncrement, 0, menu.mainMenu.length - 1);
+   String selection = menu.getSelectedText();
+   if(pressedButtons.indexOf(2) != -1)
    {
-      gameOverYeah();
+      if(selection == "Back")
+      {
+         menu.isOptions = false;
+         menu.selectedItem = 0;
+         delay(500);
+      }
+      else if(selection == "Exit")
+         System.exit(0);
+      else if(selection == "New Game")
+      {
+         isGameOver = false;
+         setupGame();
+         reset(true, true);
+      }
+      else if(selection == "Options")
+      {
+         menu.isOptions = true;
+         menu.selectedItem = 0;
+      }
    }
+   if(menu.isOptions && selection != "Back")
+   {
+      int newValue = (int) constrain(menu.optionsMenu[menu.selectedItem].value + xIncrement,
+                                     (float) menu.optionsMenu[menu.selectedItem].minValue,
+                                     (float) menu.optionsMenu[menu.selectedItem].maxValue);
+      menu.optionsMenu[menu.selectedItem].value = newValue;
+      if(selection == "Level")
+         startLevel = newValue;
+      else if(selection == "Lives")
+         startLives = newValue;
+      else if(selection == "Speed")
+         maxSpeed = newValue;
+      else if(selection == "Reward")
+         streakReward = newValue; 
+   }
+   menu.drawMenu(colors);
+   if(yIncrement != 0 || (xIncrement != 0 && menu.isOptions))
+     delay(100);
+     
 }
 
 void mainGame() //updates the states of all parts of our beautiful game
@@ -96,9 +155,7 @@ void mainGame() //updates the states of all parts of our beautiful game
    if(daBall.update(width, height, colors, shades, daBricks, daPaddle, daGame) ) //update ball; returns true if life is lost
    {
       if(daGame.lives == 0) //if the player has nothing left to lose
-      {
          isGameOver = true; //the game is over
-      }
       else
       {
          daGame.loseLife();
@@ -108,22 +165,21 @@ void mainGame() //updates the states of all parts of our beautiful game
 }
 void gameOverYeah()
 {
-  ArrayList<Integer> pressedButtons = daController.update(getControllerState());
-  int increment = (int) map(daController.yStick, 1023, 0, -1, 1);
-  gameOver.selectedItem = (int) constrain(gameOver.selectedItem + increment, 0, gameOver.menu.length - 1);
-  gameOver.update(shades);
+  isGameOver = false;
+  daGame.level = 0;
+  /*int increment = (int) map(daController.yStick, 1023, 0, -1, 1);
+  menu.selectedItem = (int) constrain(gameOver.selectedItem + increment, 0, gameOver.menu.length - 1);
+  menu.update(shades);
   if(pressedButtons.size() > 0)
   {
      if(gameOver.menu[gameOver.selectedItem].text == "Exit")
-     {
         System.exit(0);
-     }
      else if(gameOver.menu[gameOver.selectedItem].text == "New Game")
      {
         isGameOver = false;
         reset(true, true);
      }
-  }
+  }*/
 }
 int[] getControllerState() //returns an array containing all of the information from the controller
 {
@@ -132,9 +188,7 @@ int[] getControllerState() //returns an array containing all of the information 
    { 
       String input = myPort.readStringUntil('\n'); 
       if(input != null)
-      {
          state = int(split(input, ',') ); //split the string into ints
-      }
    }
    return state;
 }
@@ -167,9 +221,7 @@ void reset(Boolean doResetGameState, Boolean doResetBricks)
       daGame.level = startLevel;
       daGame.powerUpType = 0;
       for(int i = 1; i < daGame.powerUps.length; i++)
-      {
          daGame.powerUps[i] = -1;
-      }
    }
    daGame.powerUps[0] = 0;
    if(doResetBricks)
@@ -285,19 +337,13 @@ void updatePowerUps()
       daGame.streak -= streakReward;
    }
    if(daPowerUp != null && daPowerUp.update(daPaddle, daGame, colors) )
-   {
       daGame.powerUps[daPowerUp.type] = 1;
-   }
 }
 void updateBricks()
 {
    for(int i = 0; i < daBricks.length; i++) //update brix
-   {
       for(int j = 0; j < daBricks[i].length; j++)
-      {
          daBricks[i][j].update();
-      }
-   }
 }
 Brick[][] setupBricks(int rows, int cols)
 {

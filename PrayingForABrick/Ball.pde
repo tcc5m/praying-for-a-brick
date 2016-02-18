@@ -41,13 +41,9 @@ class Ball
    {
       Boolean lifeLost = false; //
       if(isCaught) //if the ball is caught (new game or catch powerup)
-      {
          caughtRoutine(daPaddle);
-      }
       else
-      {
          lifeLost = freeRoutine(screenHeight, screenWidth, daPaddle, daGame, daBricks);
-      }
       drawBall(colors, shades);
       return lifeLost;
    }
@@ -60,9 +56,7 @@ class Ball
          fill(colors[i][0],colors[i][1],colors[i][2]); //make the ball all rainbow n stuff
       }
       else
-      {
          fill(shades[4][0], shades[4][0], shades[4][0]); //white balls
-      }
       ellipse(x, y, r * 2, r * 2); //draw that big beautiful ball
    }
    void caughtRoutine(Paddle daPaddle)
@@ -76,9 +70,7 @@ class Ball
       x = constrain(x + vx, 0 + r, screenWidth - r); //keep the ball from going off the screen
       y = constrain(y + vy, 0 + r, screenHeight - r); //while incrementing x and y values
       if(!hitDaPaddle(daPaddle, daGame) && !hitDaBricks(daBricks, daGame)) //if the ball has not hit the paddle or the bricks
-      {
          lifeLost = hitWalls(screenWidth, screenHeight, daGame); //update the direction of the ball if wall hit, returns true if a life was lost (bottom hit and not invincible)
-      }
       return lifeLost;
    }
    Boolean hitDaBricks(Brick[][] daBricks, GameState daGame)
@@ -99,25 +91,17 @@ class Ball
                   daGame.streak++;
                   daGame.hitBricks++;
                   if(side == 1 || side == 2 || side == 0) //the ball has hit a brick on the left or right
-                  {
                      flipX = true;
-                  }
                   if(side == 3 || side == 4 || side == 0) //the ball has hit a brick on the top or bottom
-                  {
                      flipY = true;
-                  }
                }
             }
          }
       }
       if(flipX) //if we need to change x direction
-      {
          vx *= -1;
-      }
       if(flipY) //if we need to change y direction
-      {
          vy *= -1;
-      }
       return (flipX || flipY);
    }
    Boolean hitDaPaddle(Paddle daPaddle, GameState daGame)
@@ -138,9 +122,7 @@ class Ball
          //it will angle far to the right. if it hits in the middle,
          vy = maxSpeed - abs(f); //the ball will bounce straight up (or down if it hits the bottom)
          if(side == 3)
-         {
             vy *= -1;
-         }
       }
       else if(side == 1 || side == 2) //if the ball has hit the left or right of the paddle
       {
@@ -149,28 +131,18 @@ class Ball
          vy = f;
          vx = maxSpeed - abs(f);
          if(side == 1)
-         {
             vx *= -1;
-         }
       }
       else if(side == 0)
       {
          if(daPaddle.x + daPaddle.w - x > x - daPaddle.x)
-         {
             vx = 4;
-         }
          else
-         {
             vx = -4;
-         }
          if(daPaddle.y + daPaddle.h - y > y - daPaddle.y)
-         {
             vy = 4; 
-         }
          else
-         {
             vy = -4;
-         }
       }
       float multiplier = maxSpeed / sqrt(pow(abs(vx), 2) + pow(abs(vy), 2) );
       vx *= multiplier;
@@ -180,17 +152,11 @@ class Ball
    Boolean hitWalls(int screenWidth, int screenHeight, GameState daGame)
    {
       if(y + r >= screenHeight && !isInvincible) //if the ball has hit the bottom without invincibility
-      {
          return true; //return true indicating a life has been lost
-      }
       if(x + r >= screenWidth || x - r <= 0) //if the ball hit the left or right
-      {
          vx *= -1; //flip the x
-      }
       if(y + r >= screenHeight || y - r <= 0 + daGame.h) //if the ball hit the top or bottom
-      {
          vy *= -1; //flip the y
-      }
       return false; //return false indicating that no lives were lost this day
    }
 }

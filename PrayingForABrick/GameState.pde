@@ -14,9 +14,7 @@ class GameState
    GameState()
    {
       for(int i = 0; i < 4; i++)
-      {
          powerUps[i] = -1; 
-      }
       lives = 3;
       level = 1;
       multiplier = ( (level - 1) / 7) + 1;
@@ -26,9 +24,7 @@ class GameState
    GameState(int lives, int level, int screenWidth, int[][] colors)
    {
       for(int i = 0; i < 4; i++)
-      {
          powerUps[i] = -1; 
-      }
       powerUps[0] = 0;
       this.lives = lives;
       this.level = level;
@@ -48,9 +44,7 @@ class GameState
       fill(150, 150, 150);
       rect(width - h, 0, h, h);
       for(int i = 0; i < 4; i++)
-      {
          drawButton(i, (pressedButtons.indexOf(i) != -1), colors, shades);
-      }
    }
    void drawButton(int button, Boolean isButtonPressed, int[][] colors, int[][] shades)
    {
@@ -166,7 +160,7 @@ class GameState
       textSize(24);
       text(streakReward - streak, width - (17 * h / 16), 15 * h / 16);
       textSize(12);
-      text("Powerup", width - (17 * h / 16), 11 * h / 16); 
+      text("Reward", width - (17 * h / 16), 11 * h / 16); 
    }
    void update(ArrayList<Integer> pressedButtons, int[][] colors, int[][] shades, int streakReward)
    {
