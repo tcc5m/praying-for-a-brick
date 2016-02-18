@@ -6,6 +6,7 @@ class Brick
    float h, w;
    int hitsLeft;
    int maxHits;
+   float[] decrement = new float[3];
    boolean isHit = false; //determines whether or not the brick has been hit
    Brick()
    {
@@ -21,6 +22,7 @@ class Brick
       bB = 0;
       maxHits = 0;
       hitsLeft = maxHits;
+      setDecrement();
    }
    Brick(float x, float y, float w, float h, int maxHits, float r, float g, float b, float bR, float bG, float bB)
    {
@@ -36,6 +38,7 @@ class Brick
       this.bG = bG;
       this.bB = bB;
       hitsLeft = maxHits;
+      setDecrement();
    }
    void hit()
    {
@@ -52,6 +55,12 @@ class Brick
          g = (hitsLeft * (g - bG) / maxHits) + bG;
          b = (hitsLeft * (b - bB) / maxHits) + bB;
       }
+   }
+   void setDecrement()
+   {
+      decrement[0] = (r - bR) / maxHits;
+      decrement[1] = (g - bG) / maxHits;
+      decrement[2] = (b - bB) / maxHits;
    }
    void update()
    {

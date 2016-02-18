@@ -129,7 +129,7 @@ void updateMenu()
          {
             isGameOver = false;
             setupGame();
-            reset(true, true);
+            reset(true, true, true);
          }
          else if(selection == "Options")
          {
@@ -149,7 +149,7 @@ void mainGame() //updates the states of all parts of our beautiful game
    if(daGame.numBricks == daGame.hitBricks && daGame.numBricks != 0)
    {
      daGame.levelUp();
-     reset(false, true);
+     reset(false, true, false);
    }
    triggerPowerUps(daController.update(getControllerState() ) ); //update the controller's state
    daGame.update(daController.getHeldButtons(), colors, shades, streakReward);
@@ -163,7 +163,7 @@ void mainGame() //updates the states of all parts of our beautiful game
       else
       {
          daGame.loseLife();
-         reset(false, false);
+         reset(false, false, true);
       }
    }
 }
@@ -187,9 +187,10 @@ float getPaddleIncrement()
 {
    return map(daController.xStick,0, 1023, -1 * maxSpeed, maxSpeed);
 }
-void reset(Boolean doResetGameState, Boolean doResetBricks)
+void reset(Boolean doResetGameState, Boolean doResetBricks, Boolean doResetPowerUps)
 {
-   daPowerUps.clear();
+   if(doResetPowerUps)
+      daPowerUps.clear();
    daPaddle.x = (width / 2) - brickW;
    daPaddle.y = (height - brickH - (3 * ballRadius) );
    daPaddle.h = brickH;
@@ -219,6 +220,7 @@ void reset(Boolean doResetGameState, Boolean doResetBricks)
    daGame.powerUps[0] = 0;
    if(doResetBricks)
    {
+      daBall.maxSpeed = maxSpeed;
       daGame.numBricks = 0;
       daGame.hitBricks = 0;
       daGame.multiplier = ( (daGame.level - 1) / colors.length) + 1;
@@ -233,6 +235,7 @@ void reset(Boolean doResetGameState, Boolean doResetBricks)
             daBricks[i][j].isHit = false;
             daBricks[i][j].maxHits = daGame.multiplier;
             daBricks[i][j].hitsLeft = daGame.multiplier;
+            daBricks[i][j].setDecrement();
          }
       }
       for(int i = ( (daGame.level - 1) % 7) + 1; i < daBricks.length; i++)
@@ -243,6 +246,7 @@ void reset(Boolean doResetGameState, Boolean doResetBricks)
             daBricks[i][j].g = 50;
             daBricks[i][j].b = 50;
             daBricks[i][j].isHit = true;
+            daBricks[i][j].setDecrement();
          }
       }
    }

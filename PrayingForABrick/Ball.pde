@@ -39,6 +39,7 @@ class Ball
    }
    Boolean update(int screenWidth, int screenHeight, int[][] colors, int [][] shades, Brick[][] daBricks, Paddle daPaddle, GameState daGame)
    {
+      maxSpeed *= 1.0001;
       Boolean lifeLost = false; //
       if(isCaught) //if the ball is caught (new game or catch powerup)
          caughtRoutine(daPaddle);
@@ -89,7 +90,8 @@ class Ball
                   daBricks[i][j].hit(); //indicate the brick has been hit
                   daGame.score += 1; //increment score
                   daGame.streak++;
-                  daGame.hitBricks++;
+                  if(daBricks[i][j].isHit)
+                     daGame.hitBricks++;
                   if(side == 1 || side == 2 || side == 0) //the ball has hit a brick on the left or right
                      flipX = true;
                   if(side == 3 || side == 4 || side == 0) //the ball has hit a brick on the top or bottom
@@ -127,7 +129,7 @@ class Ball
       else if(side == 1 || side == 2) //if the ball has hit the left or right of the paddle
       {
          float f = map(daPaddle.y - y, 0, -1 * daPaddle.h, -1, -1 * (maxSpeed -1) );
-         f = constrain(f, -1 * (maxSpeed - 1), maxSpeed - 1);
+         f = constrain(f, -1, maxSpeed - 1);
          vy = f;
          vx = maxSpeed - abs(f);
          if(side == 1)
