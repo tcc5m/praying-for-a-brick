@@ -2,6 +2,7 @@ import processing.serial.*;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 //brick settings
 int[][] colors = {
@@ -42,6 +43,7 @@ int streakReward = 4;
 
 
 Boolean isGameOver = false;
+Boolean doDelay = false;
 Serial myPort = getPort();
 Brick[][] daBricks;
 Paddle daPaddle;
@@ -76,13 +78,31 @@ Serial getPort()
 
 void draw()
 {
-   background(shades[1][0],shades[1][1],shades[1][1]); //draw the background
+   background(shades[1][0], shades[1][1], shades[1][1]); //draw the background
    if(daGame.level == 0)
-     updateMenu();
+      updateMenu();
    else if(!isGameOver) //if the player has not lost the game
       mainGame(); //and call update on all those bitches
    else
       gameOverYeah();
+   if(doDelay)
+   {
+      background(shades[1][0], shades[1][1], shades[1][2]);
+      drawLoading();
+      long time = System.currentTimeMillis();
+      for(long i = time; i < time + 2000; i = System.currentTimeMillis())
+      {
+         
+      }
+      doDelay = false;
+   }
+}
+void drawLoading()
+{
+   fill(shades[4][0], shades[4][1], shades[4][2]);
+   ellipse(width / 2, height / 2, min(width, height) / 10, min(height, width) / 10);
+   ellipse(width / 4, height / 2, min(width, height) / 10, min(height, width) / 10);
+   ellipse(3 * width / 4, height / 2,  min(width, height) / 10, min(height, width) / 10);
 }
 void updateMenu()
 {
@@ -92,46 +112,50 @@ void updateMenu()
    if(menu.isOptions)
    {
       menu.selectedItem = (int) constrain(menu.selectedItem + yIncrement, 0, menu.optionsMenu.length);
-   }
-   else
-      menu.selectedItem = (int) constrain(menu.selectedItem + yIncrement, 0, menu.mainMenu.length - 1);
-   String selection = menu.getSelectedText();
-   if(pressedButtons.indexOf(2) != -1)
-   {
-      if(selection == "Back")
+      String selection = menu.getSelectedText();
+      if(pressedButtons.indexOf(2) != -1 && selection == "Back")
       {
          menu.isOptions = false;
          menu.selectedItem = 0;
-         delay(500);
+         doDelay = true;
       }
-      else if(selection == "Exit")
-         System.exit(0);
-      else if(selection == "New Game")
+      else if(selection != "Back")
       {
-         isGameOver = false;
-         setupGame();
-         reset(true, true);
-      }
-      else if(selection == "Options")
-      {
-         menu.isOptions = true;
-         menu.selectedItem = 0;
+         int newValue = (int) constrain(menu.optionsMenu[menu.selectedItem].value + xIncrement,
+                                        (float) menu.optionsMenu[menu.selectedItem].minValue,
+                                        (float) menu.optionsMenu[menu.selectedItem].maxValue);
+         menu.optionsMenu[menu.selectedItem].value = newValue;
+         if(selection == "Level")
+            startLevel = newValue;
+         else if(selection == "Lives")
+            startLives = newValue;
+         else if(selection == "Speed")
+            maxSpeed = newValue;
+         else if(selection == "Reward")
+            streakReward = newValue;
       }
    }
-   if(menu.isOptions && selection != "Back")
+   else
    {
-      int newValue = (int) constrain(menu.optionsMenu[menu.selectedItem].value + xIncrement,
-                                     (float) menu.optionsMenu[menu.selectedItem].minValue,
-                                     (float) menu.optionsMenu[menu.selectedItem].maxValue);
-      menu.optionsMenu[menu.selectedItem].value = newValue;
-      if(selection == "Level")
-         startLevel = newValue;
-      else if(selection == "Lives")
-         startLives = newValue;
-      else if(selection == "Speed")
-         maxSpeed = newValue;
-      else if(selection == "Reward")
-         streakReward = newValue; 
+      menu.selectedItem = (int) constrain(menu.selectedItem + yIncrement, 0, menu.mainMenu.length - 1);
+      String selection = menu.getSelectedText();
+      if(pressedButtons.indexOf(2) != -1)
+      {
+         if(selection == "Exit")
+            System.exit(0);
+         else if(selection == "New Game")
+         {
+            isGameOver = false;
+            setupGame();
+            reset(true, true);
+            doDelay = true;
+         }
+         else if(selection == "Options")
+         {
+            menu.isOptions = true;
+            menu.selectedItem = 0;
+         }
+      }
    }
    menu.drawMenu(colors);
    if(yIncrement != 0 || (xIncrement != 0 && menu.isOptions))
@@ -167,19 +191,6 @@ void gameOverYeah()
 {
   isGameOver = false;
   daGame.level = 0;
-  /*int increment = (int) map(daController.yStick, 1023, 0, -1, 1);
-  menu.selectedItem = (int) constrain(gameOver.selectedItem + increment, 0, gameOver.menu.length - 1);
-  menu.update(shades);
-  if(pressedButtons.size() > 0)
-  {
-     if(gameOver.menu[gameOver.selectedItem].text == "Exit")
-        System.exit(0);
-     else if(gameOver.menu[gameOver.selectedItem].text == "New Game")
-     {
-        isGameOver = false;
-        reset(true, true);
-     }
-  }*/
 }
 int[] getControllerState() //returns an array containing all of the information from the controller
 {
