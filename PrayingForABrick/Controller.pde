@@ -23,10 +23,18 @@ class Controller
    ArrayList<Integer> getPressedButtons()
    {
       ArrayList<Integer> pressed = new ArrayList<Integer>();
-      for(int i = 0; i < buttons.length; i++)
+      for(int i = 0; i < isPressed.length; i++)
          if(isPressed[i])
             pressed.add(i);
       return pressed;
+   }
+   ArrayList<Integer> getHeldButtons()
+   {
+      ArrayList<Integer> held = new ArrayList<Integer>();
+      for(int i = 0; i < buttons.length; i++)
+         if(buttons[i])
+            held.add(i);
+      return held;
    }
    void updateButtons(int[] state)
    {

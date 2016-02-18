@@ -150,9 +150,8 @@ void mainGame() //updates the states of all parts of our beautiful game
      daGame.levelUp();
      reset(false, true);
    }
-   ArrayList<Integer> pressedButtons = daController.update(getControllerState()); //update the controller's state
-   triggerPowerUps(pressedButtons);
-   daGame.update(pressedButtons, colors, shades, streakReward);
+   triggerPowerUps(daController.update(getControllerState() ) ); //update the controller's state
+   daGame.update(daController.getHeldButtons(), colors, shades, streakReward);
    updateBricks();
    updatePowerUps();
    daPaddle.update(int(getPaddleIncrement() ), width ); //update paddle with an increment dependent upon the controller direction

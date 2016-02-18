@@ -38,13 +38,13 @@ class GameState
       fill(shades[3][0], shades[3][0], shades[3][0]);
       rect(0, 0, w, h);
    }
-   void drawButtons(ArrayList<Integer> pressedButtons, int[][] colors, int[][] shades)
+   void drawButtons(ArrayList<Integer> heldButtons, int[][] colors, int[][] shades)
    {
       noStroke();
       fill(150, 150, 150);
       rect(width - h, 0, h, h);
       for(int i = 0; i < 4; i++)
-         drawButton(i, (pressedButtons.indexOf(i) != -1), colors, shades);
+         drawButton(i, (heldButtons.indexOf(i) != -1), colors, shades);
    }
    void drawButton(int button, Boolean isButtonPressed, int[][] colors, int[][] shades)
    {
@@ -162,11 +162,11 @@ class GameState
       textSize(12);
       text("Reward", width - (17 * h / 16), 11 * h / 16); 
    }
-   void update(ArrayList<Integer> pressedButtons, int[][] colors, int[][] shades, int streakReward)
+   void update(ArrayList<Integer> heldButtons, int[][] colors, int[][] shades, int streakReward)
    {
       drawBackground(shades);
       drawLives(shades);
-      drawButtons(pressedButtons, colors, shades);
+      drawButtons(heldButtons, colors, shades);
       drawTopUi(shades, streakReward);
    }
    void loseLife()
