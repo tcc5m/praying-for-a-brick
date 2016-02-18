@@ -58,9 +58,9 @@ class Brick
    }
    void setDecrement()
    {
-      decrement[0] = (r - bR) / maxHits;
-      decrement[1] = (g - bG) / maxHits;
-      decrement[2] = (b - bB) / maxHits;
+      decrement[0] = ( (r - bR) - ( (r - bR) / 10) ) / maxHits;
+      decrement[1] = ( (g - bG) - ( (g - bG) / 10) ) / maxHits;
+      decrement[2] = ( (b - bB) - ( (b - bB) / 10) ) / maxHits;
    }
    void update()
    {
