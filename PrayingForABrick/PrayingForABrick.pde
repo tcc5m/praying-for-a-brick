@@ -78,6 +78,11 @@ Serial getPort()
 
 void draw()
 {
+   if(doDelay)
+   {
+      delay(500);
+      doDelay = false;
+   }
    background(shades[1][0], shades[1][1], shades[1][1]); //draw the background
    if(daGame.level == 0)
       updateMenu();
@@ -89,16 +94,11 @@ void draw()
    {
       background(shades[1][0], shades[1][1], shades[1][2]);
       drawLoading();
-      long time = System.currentTimeMillis();
-      for(long i = time; i < time + 2000; i = System.currentTimeMillis())
-      {
-         
-      }
-      doDelay = false;
    }
 }
 void drawLoading()
 {
+   noStroke();
    fill(shades[4][0], shades[4][1], shades[4][2]);
    ellipse(width / 2, height / 2, min(width, height) / 10, min(height, width) / 10);
    ellipse(width / 4, height / 2, min(width, height) / 10, min(height, width) / 10);
@@ -154,6 +154,7 @@ void updateMenu()
          {
             menu.isOptions = true;
             menu.selectedItem = 0;
+            doDelay = true;
          }
       }
    }
