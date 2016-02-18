@@ -29,7 +29,7 @@ int brickRows = colors.length;
 
 
 //ball settings
-float ballRadius = 6;
+float ballRadius;
 int maxSpeed = 6;
 
 //game settings
@@ -43,7 +43,6 @@ int streakReward = 4;
 
 
 Boolean isGameOver = false;
-Boolean doDelay = false;
 Serial myPort = getPort();
 Brick[][] daBricks;
 Paddle daPaddle;
@@ -58,6 +57,7 @@ Menu menu;
 void setup()
 {
    size(1000,1000); //create a new window
+   ballRadius = min(width, height) / 100;
    brickW = (width - ( (brickCols + 1) * brickSpacing) ) / brickCols; 
    daGame = new GameState(startLives, 0, width, colors);
    menu = new Menu(startLevel, startLives, streakReward, maxSpeed, shades[2]);
@@ -78,11 +78,6 @@ Serial getPort()
 
 void draw()
 {
-   if(doDelay)
-   {
-      delay(500);
-      doDelay = false;
-   }
    background(shades[1][0], shades[1][1], shades[1][1]); //draw the background
    if(daGame.level == 0)
       updateMenu();
@@ -90,23 +85,12 @@ void draw()
       mainGame(); //and call update on all those bitches
    else
       gameOverYeah();
-   if(doDelay)
-   {
-      background(shades[1][0], shades[1][1], shades[1][2]);
-      drawLoading();
-   }
-}
-void drawLoading()
-{
-   noStroke();
-   fill(shades[4][0], shades[4][1], shades[4][2]);
-   ellipse(width / 2, height / 2, min(width, height) / 10, min(height, width) / 10);
-   ellipse(width / 4, height / 2, min(width, height) / 10, min(height, width) / 10);
-   ellipse(3 * width / 4, height / 2,  min(width, height) / 10, min(height, width) / 10);
 }
 void updateMenu()
 {
    ArrayList<Integer> pressedButtons = daController.update(getControllerState()); //update the controller's state
+   if(pressedButtons.size() > 0)
+      println(pressedButtons);
    int yIncrement = (int) map(daController.yStick, 1023, 0, -1, 1);
    int xIncrement = (int) map(daController.xStick, 0, 1023, -1, 1);
    if(menu.isOptions)
@@ -117,7 +101,6 @@ void updateMenu()
       {
          menu.isOptions = false;
          menu.selectedItem = 0;
-         doDelay = true;
       }
       else if(selection != "Back")
       {
@@ -148,13 +131,11 @@ void updateMenu()
             isGameOver = false;
             setupGame();
             reset(true, true);
-            doDelay = true;
          }
          else if(selection == "Options")
          {
             menu.isOptions = true;
             menu.selectedItem = 0;
-            doDelay = true;
          }
       }
    }
